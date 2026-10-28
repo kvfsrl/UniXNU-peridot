@@ -22,7 +22,7 @@ diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
  #if CONFIG_MEMORYSTATUS
  	(void) memorystatus_init_at_boot_snapshot();
  #endif /* CONFIG_MEMORYSTATUS */
-@@ -8220,6 +8227,161 @@
+@@ -8220,6 +8227,162 @@
  	vnode_put(vp);
  }
  
@@ -180,6 +180,7 @@ diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
 +	}
 +	(void)native_gpu_addon_write(marker, (const uint8_t *)"1\n", 2, 0644, ctx);
 +	native_ls_store_status = removed;
++}
 +
  static int
  process_signature(proc_t p, struct image_params *imgp)
