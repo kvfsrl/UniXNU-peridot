@@ -1,11 +1,11 @@
-diff --git a/config/MASTER.arm64.bcm2837 b/config/MASTER.arm64.bcm2837
---- a/config/MASTER.arm64.bcm2837
-+++ b/config/MASTER.arm64.bcm2837
-@@ -82,5 +82,7 @@ makeoptions	OSFMK_MACHINE = "arm64"				# <mach>
+diff --git a/config/MASTER b/config/MASTER
+--- a/config/MASTER
++++ b/config/MASTER
+@@ -614,7 +614,5 @@ options		LOCK_STATS		#		    # <lock_stats>
  
- options		COUNT_SYSCALLS		# count bsd system calls 	# <countcalls>
-+nooptions	KPC
-+nooptions	KPERF
- options     TRASH_VFP_ON_SAVE   # <debug,trash_vfp>
- options		ALTERNATE_DEBUGGER	# <alternate_debugger>
+ # kernel performance tracing
+-options     KPERF                  # <kperf>
+-options     KPC                    # <kpc>
  
+ 
+ options     CONFIG_PERVASIVE_CPI    # <config_pervasive_cpi>
