@@ -3,6 +3,10 @@ name: macOS build
 on:
   workflow_dispatch:
     inputs:
+      runner:
+        description: macOS runner image (macos-14 for the Xcode 15 iig of xnu-8796)
+        required: true
+        default: macos-26
       device_repository:
         description: Device repository as owner/name
         required: true
@@ -25,7 +29,7 @@ on:
           - kernel userdata payload
         default: kernel
       xcode:
-        description: Xcode version of the macos-26 image (/Applications/Xcode_<version>.app)
+        description: Xcode version installed on the runner (/Applications/Xcode_<version>.app)
         required: true
         default: "26.6"
       ipsw_url:
@@ -78,8 +82,9 @@ defaults:
 jobs:
   build:
     # Pinned: macos-latest moves between images (macos-15 had an Xcode whose clang rejects the warning options the
-    # build passes with -Werror). macos-26 is arm64 and carries the Xcode 26 line the build is developed with.
-    runs-on: macos-26
+    # build passes with -Werror). The caller selects the image: macos-26/Xcode 26 for current sources, macos-14/Xcode 15
+    # for xnu-8796 whose IORPC ABI needs the older iig.
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 360
     env:
       DEVELOPER_DIR: /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer

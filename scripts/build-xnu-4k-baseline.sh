@@ -5,13 +5,13 @@ trap 'echo "build-xnu-4k-baseline.sh: line $LINENO: $BASH_COMMAND failed" >&2' E
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$ROOT"
 # Source versions come from feeds.toml through the unixnu driver; the defaults are the qualified ones.
-XNU_TAG=${UNIXNU_XNU_TAG:-xnu-10063.141.1}
-XNU_COMMIT=${UNIXNU_XNU_COMMIT:-d8b80295118ef25ac3a784134bcf95cd8e88109f}
-XNU_DARWIN=${UNIXNU_XNU_DARWIN:-23.6.0}
-XNU_VERSION=${UNIXNU_XNU_VERSION:-10063.141.1}
-LIBPLATFORM_TAG=${UNIXNU_LIBPLATFORM_TAG:-libplatform-316.100.10}
-LIBDISPATCH_TAG=${UNIXNU_LIBDISPATCH_TAG:-libdispatch-1477.100.9}
-AVAILABILITY_TAG=${UNIXNU_AVAILABILITYVERSIONS_TAG:-AvailabilityVersions-141.1}
+XNU_TAG=${UNIXNU_XNU_TAG:-xnu-8796.141.3}
+XNU_COMMIT=${UNIXNU_XNU_COMMIT:-1b191cb58250d0705d8a51287127505aa4bc0789}
+XNU_DARWIN=${UNIXNU_XNU_DARWIN:-22.6.0}
+XNU_VERSION=${UNIXNU_XNU_VERSION:-8796.141.3}
+LIBPLATFORM_TAG=${UNIXNU_LIBPLATFORM_TAG:-libplatform-306.0.1}
+LIBDISPATCH_TAG=${UNIXNU_LIBDISPATCH_TAG:-libdispatch-1415.100.11}
+AVAILABILITY_TAG=${UNIXNU_AVAILABILITYVERSIONS_TAG:-AvailabilityVersions-115.4}
 if [ ! -d refer/xnu/.git ]; then
   git clone --depth 1 --branch "$XNU_TAG" https://github.com/apple-oss-distributions/xnu.git refer/xnu
 fi
@@ -37,7 +37,7 @@ if [ -z "${UNIXNU_PATCH_LIST:-}" ]; then
 # Remove them first so earlier independent patches retain their idempotent checks.
 # The same holds for the boot-time GPU addon mount and the staged system apps copy (zzy), which edit the owner Data mount function
 # inside the systemos patch. Reverse newest first; the loop below re-applies them in name order.
-for LATE_PATCH in "$ROOT/patches/xnu/zzz-boot-progress.patch" "$ROOT/patches/xnu/zzyb-native-cryptex-os-view.patch" \
+for LATE_PATCH in "$ROOT/patches/xnu/zzyb-native-cryptex-os-view.patch" \
     "$ROOT/patches/xnu/zzy-staged-system-apps.patch" "$ROOT/patches/xnu/zzy-native-gpu-addon-mount.patch" \
     "$ROOT/patches/xnu/zzyc-owner-skip-launch-constraints.patch"; do
   if git -C .cache/xnu-work apply --reverse --check "$LATE_PATCH" >/dev/null 2>&1; then

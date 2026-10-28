@@ -58,7 +58,7 @@ def linux_env(ctx):
     """Environment of the kernel step on a Linux host, with the toolchain of scripts/linux/setup-toolchain.py.
 
     The xcrun shim answers every --sdk query with the fakeroot this build makes. The target is plain arm64 for
-    iOS 17, so the clang wrapper adds only the flag that keeps C++ static destructors in __mod_term_func.
+    the profile's iOS major, so the clang wrapper adds only the flag that keeps C++ static destructors in __mod_term_func.
     CCC_OVERRIDE_OPTIONS (read by the clang driver itself, so also by the archive builders that replay xnu's
     compile records) turns off two warnings that upstream clang has and Apple clang does not; the builders compile
     with -Werror.
@@ -70,12 +70,14 @@ def linux_env(ctx):
         if not path.exists():
             raise Error(f'{path} missing; run "sudo scripts/linux/setup-toolchain.py {toolchain}"')
     fakeroot = ctx.tree / '.cache/fakeroot'
+    profile = ctx.board.get('os', {})
+    ios_major = str(profile.get('version', '17.7.11')).split('.')[0]
     return {'PATH': os.pathsep.join([str(clt / 'bin'), str(toolchain / 'bin'), os.environ.get('PATH', '')]),
             'LC_ALL': 'C', 'CLT_PREFIX': str(clt), 'XCTOOLCHAIN_PREFIX': str(xctoolchain),
             'XNU_TOOLCHAIN_BIN': f'{clt / "bin"} {xctoolchain / "bin"}',
-            'UNIXNU_SDKROOT': str(fakeroot), 'UNIXNU_SDK_VERSION': '17.0',
+            'UNIXNU_SDKROOT': str(fakeroot), 'UNIXNU_SDK_VERSION': f'{ios_major}.0',
             'UNIXNU_PLATFORM_PATH': str(fakeroot / 'Platforms/iPhoneOS.platform'),
-            'CROSS_CLANG': str(toolchain / 'llvm/bin/clang'), 'DARWIN_TRIPLE': 'arm64-apple-ios17.0',
+            'CROSS_CLANG': str(toolchain / 'llvm/bin/clang'), 'DARWIN_TRIPLE': f'arm64-apple-ios{ios_major}.0',
             'CROSS_EXTRA_FLAGS': '-mllvm -disable-atexit-based-global-dtor-lowering',
             'CCC_OVERRIDE_OPTIONS': '# +-Wno-missing-designated-field-initializers +-Wno-unused-but-set-global'}
 
