@@ -1,6 +1,8 @@
+diff --git a/bsd/kern/bsd_init.c b/bsd/kern/bsd_init.c
+index 4df41ba..5af73f8 100644
 --- a/bsd/kern/bsd_init.c
 +++ b/bsd/kern/bsd_init.c
-@@ -1282,7 +1282,23 @@ bsd_autoconf(void)
+@@ -1096,9 +1096,32 @@ bsd_autoconf(void)
  		}
  	}
  
@@ -16,7 +18,7 @@
 +	}
 +#endif
 +#if defined(XNU_PERIDOT_TOUCH) && XNU_PERIDOT_TOUCH
-+	extern void native_touch_probe(void) __attribute__((weak_import));
++	extern void native_touch_probe(void) __attribute__((weak));
 +	if (native_touch_probe) {
 +		native_touch_probe();
 +	}
@@ -24,4 +26,13 @@
 +	return result;
  }
  
++#if defined(XNU_PERIDOT_TOUCH) && XNU_PERIDOT_TOUCH
++__attribute__((weak)) void
++native_touch_probe(void)
++{
++}
++#endif
++
+ 
+ #include <sys/disklabel.h>  /* for MAXPARTITIONS */
  
