@@ -179,7 +179,7 @@ if [ "$CRYPTO_BOOTSTRAP_MODE" = prelinked ]; then
   # failure is suppressed, and no replacement crypto callbacks are supplied.
   EXTRA_MAKE_ARGS+=("prng_random.o_CFLAGS_ADD=-UXNU_SOURCE_CORECRYPTO14")
 else
-  EXTRA_MAKE_ARGS+=("prng_random.o_CFLAGS_ADD=")
+  EXTRA_MAKE_ARGS+=("prng_random.o_CFLAGS_ADD=-DXNU_SOURCE_CORECRYPTO14=1")
 fi
 if [ "${XNU_NATIVE_AES:-0}" = 1 ]; then
   if [ "$CRYPTO_BOOTSTRAP_MODE" != prelinked ] || [ "${XNU_SOURCE_CORECRYPTO14:-0}" != 1 ]; then
