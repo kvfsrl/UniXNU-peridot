@@ -20,21 +20,6 @@ fetch = ["KernelCache", "DeviceTree", "StaticTrustCache", "Cryptex1,SystemTrustC
 [kernel]
 defconfig = "peridot_defconfig"
 archives = [
-  "build-corecrypto-14.py",
-  "build-corecrypto-14.py --namespace",
-  "build-arm-driver.py ArmDTPlatform",
-  "build-arm-driver.py ArmCpu",
-  "build-arm-driver.py SoftwareAES",
-  "build-software-aes-bindings.py",
-  "build-arm-driver.py VirtioMmioBlock",
-  "build-arm-driver.py RamBlock",
-  "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block",
-  "build-virtio-mmio-bindings.py --component VirtioMmioBlock",
-  "build-mockfs-fixture.py",
-  "build-arm-driver.py Adreno740",
-  "build-adreno740-kits.py",
-  "build-adreno740-accelerator.py",
-  "build-gop-legacy-display.py",
   "build-peridot-touch.py",
 ]
 
