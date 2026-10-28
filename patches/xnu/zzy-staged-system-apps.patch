@@ -1,8 +1,25 @@
 diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
-index f41b75b..a885884 100644
 --- a/bsd/kern/kern_exec.c
 +++ b/bsd/kern/kern_exec.c
-@@ -7325,6 +7325,313 @@ proc_process_signature(proc_t p, os_reason_t *signature_failure_reason)
+@@ -6931,6 +6931,9 @@
+ uint8_t native_owner_data_seed_sha256[32];
+ char native_owner_data_device_path[64];
+ 
++static void
++native_staged_apps_prepare(proc_t p, user_addr_t scratch, mount_t data_mount);
++
+ static int
+ native_owner_data_prepare(proc_t p, user_addr_t scratch)
+ {
+@@ -6989,6 +6992,7 @@
+ 	if (actual != device || (vfs_flags(data_mount) & MNT_RDONLY) ||
+ 	    strcmp(vfs_statfs(data_mount)->f_fstypename, "apfs")) error = EINVAL;
+ 	if (!error) native_owner_data_stage = 4;
++	if (!error) native_staged_apps_prepare(p, scratch, data_mount);
+ done:
+ 	if (data_root) vnode_put(data_root);
+ 	native_owner_data_status = error;
+@@ -7909,6 +7913,313 @@
  	return error;
  }
  
@@ -316,11 +333,3 @@ index f41b75b..a885884 100644
  static int
  process_signature(proc_t p, struct image_params *imgp)
  {
-@@ -7384,6 +7691,7 @@ process_signature(proc_t p, struct image_params *imgp)
- 	if ((error = mac_proc_check_launch_constraints(p, imgp, &launch_constraint_reason)) != 0) {
- 		signature_failure_reason = launch_constraint_reason;
- 		goto done;
-+	if (!error) native_staged_apps_prepare(p, scratch, data_mount);
- 	}
- 
- #if XNU_TARGET_OS_OSX

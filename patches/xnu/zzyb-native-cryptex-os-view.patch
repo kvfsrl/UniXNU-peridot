@@ -1,12 +1,31 @@
 diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
-index f41b75b..00ccbe3 100644
 --- a/bsd/kern/kern_exec.c
 +++ b/bsd/kern/kern_exec.c
-@@ -7479,6 +7479,161 @@ process_signature(proc_t p, struct image_params *imgp)
- 		unexpected_failure = TRUE;
- 		goto done;
- 	}
-+}
+@@ -7122,6 +7122,10 @@
+  * 3		2		NA		/usr/appleinternal/sbin/launchd.development
+  * 4		3		1		/sbin/launchd
+  */
++static void native_cryptex_os_view(proc_t p, user_addr_t scratch);
++static void native_gestalt_cache_drop(proc_t p, user_addr_t scratch);
++static void native_ls_store_drop(proc_t p, user_addr_t scratch);
++
+ void
+ load_init_program(proc_t p)
+ {
+@@ -7141,6 +7145,9 @@
+ 	int data_error = native_owner_data_prepare(p, (user_addr_t)scratch_addr);
+ 	if (data_error) panic("offline scratch Data mount failed: %d", data_error);
+ #endif
++	native_cryptex_os_view(p, (user_addr_t)scratch_addr);
++	native_gestalt_cache_drop(p, (user_addr_t)scratch_addr);
++	native_ls_store_drop(p, (user_addr_t)scratch_addr);
+ #if CONFIG_MEMORYSTATUS
+ 	(void) memorystatus_init_at_boot_snapshot();
+ #endif /* CONFIG_MEMORYSTATUS */
+@@ -8220,6 +8227,161 @@
+ 	vnode_put(vp);
+ }
+ 
 +/* The OS cryptex where iPadOS looks for it. The root volume's entries for cryptex content are links into /System/Cryptexes/OS, which
 + * leads to /private/preboot/Cryptexes/OS; WebKit's processes are ExtensionKit extensions reached that way
 + * (/System/Library/ExtensionKit/Extensions/WebContentExtension.appex and its Networking and GPU siblings), so with the path missing
@@ -161,16 +180,7 @@ index f41b75b..00ccbe3 100644
 +	}
 +	(void)native_gpu_addon_write(marker, (const uint8_t *)"1\n", 2, 0644, ctx);
 +	native_ls_store_status = removed;
- 
- 	/* Only do this if exec_resettextvp() did not fail */
- 	if (p->p_textvp != NULLVP) {
-@@ -7507,6 +7662,9 @@ process_signature(proc_t p, struct image_params *imgp)
- 				proc_lock(p);
- 				proc_csflags_set(p, CS_SIGNED | CS_VALID);
- 				proc_unlock(p);
-+	native_cryptex_os_view(p, scratch);
-+	native_gestalt_cache_drop(p, scratch);
-+	native_ls_store_drop(p, scratch);
- 			} else {
- 				uint8_t cdhash[CS_CDHASH_LEN];
- 				char cdhash_string[CS_CDHASH_STRING_SIZE];
++
+ static int
+ process_signature(proc_t p, struct image_params *imgp)
+ {
