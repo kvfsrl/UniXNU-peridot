@@ -219,6 +219,7 @@ jobs:
           # prepare-xnu-source.py lists Apple sources through the GitHub API; anonymous calls from hosted runners hit
           # the shared rate limit (HTTP 403).
           GITHUB_TOKEN: ${{ github.token }}
+          MAKEFLAGS: --debug=b
         run: ./unixnu build kernel
 
       - name: Build userdata
